@@ -2,7 +2,9 @@
 
 package config
 
-import "path"
+import (
+	"path"
+)
 
 var (
 	gameConfigFile = path.Join("Pal", "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")

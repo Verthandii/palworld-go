@@ -2,9 +2,12 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -29,11 +32,11 @@ var defaultConfig = &Config{
 	ProcessName:               processName,
 	CheckInterval:             30, // 30 秒
 	RCONPort:                  "25575",
-	MemoryCheckInterval:       30,                                                                     // 30 秒
-	MemoryUsageThreshold:      80,                                                                     // 80%
-	MemoryCleanupInterval:     0,                                                                      // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
+	MemoryCheckInterval:       30,                                      // 30 秒
+	MemoryUsageThreshold:      80,                                      // 80%
+	MemoryCleanupInterval:     0,                                       // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
 	MaintenanceWarningMessage: "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。", // 默认的维护警告消息
-	UsePerfThreads:            true,                                                                   // 默认启用多线程优化
+	UsePerfThreads:            true,                                    // 默认启用多线程优化
 }
 
 const (
@@ -126,6 +129,59 @@ func fix(config *Config) {
 		config.MaintenanceWarningMessage = "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。"
 	}
 
-	// TODO 修改游戏配置 ini
+	// 修改游戏配置 ini
+	copyGameConfig(config)
+	gameConfigData, err := os.ReadFile(path.Join(config.GamePath, gameConfigFile))
+	if err != nil {
+		log.Printf("加载游戏配置文件失败【%v】", err)
+		os.Exit(1)
+	}
+	gameConfigDataStr := string(gameConfigData)
+	gameConfigDataStr = strings.ReplaceAll(gameConfigDataStr, "RCONEnabled=False", "RCONEnabled=True")
+	gameConfigDataStr = strings.ReplaceAll(gameConfigDataStr, `AdminPassword=""`, fmt.Sprintf(`AdminPassword="%s"`, config.AdminPassword))
 
+	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), []byte(gameConfigDataStr), 0666)
+	if err != nil {
+		log.Printf("更新游戏配置文件失败【%v】", err)
+		os.Exit(1)
+	}
+}
+
+// copyGameConfig 如果没有游戏配置文件，则将默认的配置文件复制过去
+func copyGameConfig(c *Config) {
+	filePath := path.Join(c.GamePath, gameConfigFile)
+	dir, _ := path.Split(filePath)
+
+	stat, err := os.Stat(dir)
+	if err == nil {
+		if !stat.IsDir() {
+			log.Printf("游戏目录损坏, 请重新下载游戏")
+			os.Exit(1)
+		}
+	}
+
+	if os.IsNotExist(err) {
+		if err = os.MkdirAll(dir, 0777); err != nil {
+			log.Printf("创建游戏目录失败【%v】", err)
+			os.Exit(1)
+		}
+	}
+
+	// 目录存在 或者 被新建出来了
+	stat, err = os.Stat(filePath)
+	if err == nil {
+		// 存在游戏配置，不用 copy
+		return
+	}
+
+	defaultSetting, err := os.ReadFile(c.GamePath + "DefaultPalWorldSettings.ini")
+	if err != nil {
+		log.Printf("读取游戏默认配置失败【%v】", err)
+		os.Exit(1)
+	}
+
+	if err = os.WriteFile(filePath, defaultSetting, 0666); err != nil {
+		log.Printf("新建游戏配置失败【%v】", err)
+		os.Exit(1)
+	}
 }

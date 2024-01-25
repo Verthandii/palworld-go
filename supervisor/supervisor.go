@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Verthandii/palworld-go/config"
-	"github.com/Verthandii/palworld-go/rcon"
 )
 
 type Supervisor interface {
@@ -16,23 +15,18 @@ type Supervisor interface {
 }
 
 type supervisor struct {
-	c      *rcon.Client
 	config *config.Config
 }
 
 func New(cfg *config.Config) (Supervisor, error) {
-	c, err := rcon.New(cfg)
-	if err != nil {
-		return nil, err
-	}
-
 	return &supervisor{
-		c:      c,
 		config: cfg,
 	}, nil
 }
 
 func (s *supervisor) Start(ctx context.Context) {
+	s.restart()
+
 	checkDuration := time.Duration(s.config.CheckInterval) * time.Second
 	ticker := time.NewTicker(checkDuration)
 	defer ticker.Stop()
@@ -58,9 +52,9 @@ func (s *supervisor) restart() {
 	cmd := exec.Command(initCommand, s.usePerfThreads()...)
 	cmd.Dir = cfg.GamePath // 设置工作目录为游戏路径
 	if err := cmd.Start(); err != nil {
-		log.Printf("服务器重启失败【%v】\n", err)
+		log.Printf("服务器启动失败【%v】\n", err)
 	} else {
-		log.Printf("服务器重启成功\n")
+		log.Printf("服务器启动成功\n")
 	}
 }
 
