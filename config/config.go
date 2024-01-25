@@ -12,7 +12,7 @@ type Config struct {
 	Address                   string  `json:"address"`                   // 服务器 IP 地址
 	RCONPort                  string  `json:"rconPort"`                  // RCON 端口号
 	AdminPassword             string  `json:"adminPassword"`             // RCON 管理员密码
-	ProcessName               string  `json:"processName"`               // 进程名称 PalServer
+	ProcessName               string  `json:"processName"`               // 进程名称 PalServer.exe
 	CheckInterval             int     `json:"checkInterval"`             // 进程存活检查时间（秒）
 	MemoryCheckInterval       int     `json:"memoryCheckInterval"`       // 内存占用检测时间（秒）
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
@@ -25,7 +25,7 @@ var defaultConfig = &Config{
 	GamePath:                  "",
 	Address:                   "127.0.0.1:25575",
 	AdminPassword:             "default_password",
-	ProcessName:               "PalServer",
+	ProcessName:               processName,
 	CheckInterval:             30, // 30 秒
 	RCONPort:                  "25575",
 	MemoryCheckInterval:       30,                                      // 30 秒
@@ -34,8 +34,10 @@ var defaultConfig = &Config{
 	MaintenanceWarningMessage: "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。", // 默认的维护警告消息
 }
 
-// 配置文件路径
-const configFile = "config.json"
+const (
+	configFile  = "config.json"
+	processName = "PalServer.exe"
+)
 
 func init() {
 	var config *Config
@@ -82,11 +84,11 @@ func fix(config *Config) {
 
 	gamePath := config.GamePath
 	if gamePath == "" {
-		gamePath = filepath.Join(currentDir, "PalServer.exe")
+		gamePath = filepath.Join(currentDir, config.ProcessName)
 	}
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
-		log.Println("当前目录未找到 PalServer.exe 文件, 请将程序放置在 PalServer.exe 同目录下")
+		log.Printf("当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下", config.ProcessName, config.ProcessName)
 		os.Exit(1)
 	}
 

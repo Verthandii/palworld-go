@@ -4,6 +4,7 @@ package supervisor
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -52,7 +53,7 @@ func (s *supervisor) Start(ctx context.Context) {
 
 func (s *supervisor) isAlive() bool {
 	cfg := config.CFG()
-	out, err := exec.Command("tasklist", "/FI", "IMAGENAME eq "+cfg.ProcessName).Output()
+	out, err := exec.Command("tasklist", "/FI", fmt.Sprintf("IMAGENAME eq %s", cfg.ProcessName)).Output()
 	if err != nil {
 		log.Printf("Supervisor 健康检查失败 【%v】\n", err)
 		return false
@@ -62,7 +63,7 @@ func (s *supervisor) isAlive() bool {
 
 func (s *supervisor) restart() {
 	cfg := config.CFG()
-	command := filepath.Join(cfg.GamePath, cfg.ProcessName+".exe")
+	command := filepath.Join(cfg.GamePath, cfg.ProcessName)
 	cmd := exec.Command(command)
 	cmd.Dir = cfg.GamePath // 设置工作目录为游戏路径
 	if err := cmd.Start(); err != nil {
