@@ -2,6 +2,16 @@
 
 _✨ 适用于palworld的进程守护+强力内存释放+内存不足自动重启服务端 ✨_
 
+## 场景支持
+
+### 自动重启
+
+当内存打到阈值时，通过 `rcon` 通知所有在线玩家，然后重启服务器以清理内存
+
+### 自动清理无用内存（仅支持 windows）
+
+通过调用微软的 `rammap` 释放无用内存，完美解决《幻兽帕鲁》服务器的内存泄漏问题
+
 ## 特别鸣谢+推荐
 
 https://gist.github.com/Bluefissure/b0fcb05c024ee60cad4e23eb55463062
@@ -10,21 +20,17 @@ https://github.com/Hoshinonyaruko/palworld-go
 
 ## 使用方法
 
-启动后配置（会继续完善）
+### Windows Steam 客户端
 
-打开 `\steamcmd\steamapps\common\PalServer\DefaultPalWorldSettings.ini` 配置文件
+1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示。![打开目录](/pic/windows_steam_start.png)
+2. 复制目录到 `config.json` 的 `gamePath` 中，再按需修改 `config.json` 中其他配置项
+3. 将[下载](https://github.com/Verthandii/palworld-go/release)好的可执行文件移动到此目录下，在命令行中运行即可
 
-修改 `RCONEnabled=False`, 把 `False` 改为 `True` 启用 `Rcon`, 修改 `AdminPassword=""` 在 `""` 中设置你的管理员密码
+### Windows SteamCMD
 
-修改完成后保存配置文件, 复制文档全部内容到
+### Linux SteamCMD
 
-`\steamcmd\steamapps\common\PalServer\Pal\Saved\Config\WindowsServer\PalWorldSettings.ini`
-
-保存配置文件
-
-第一次启动`palworld-go-windows-amd64.exe`后会生成`config.json`配置文件
-
-配置文件描述如下
+## 配置文件描述
 
 | 配置项                       | 推荐值                                          | 备注                            |
 |---------------------------|----------------------------------------------|-------------------------------|
@@ -50,8 +56,3 @@ https://github.com/Hoshinonyaruko/palworld-go
 - [x] 服务器内存清理
 - [ ] 通过页面修改游戏配置（如经验值倍率）
 
-## 场景支持
-
-内存不足的时候，通过 `rcon` 通知服务器成员，然后重启服务器
-
-通过调用微软的 `rammap` 释放无用内存，并将有用内存转移至虚拟内存，实现一次释放 50%+ 内存
