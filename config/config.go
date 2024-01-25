@@ -18,6 +18,7 @@ type Config struct {
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
 	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理时间间隔（秒）
 	MaintenanceWarningMessage string  `json:"maintenanceWarningMessage"` // 维护警告消息
+	UsePerfThreads            bool    `json:"usePerfThreads"`            // 多线程优化
 }
 
 // 默认配置
@@ -32,6 +33,7 @@ var defaultConfig = &Config{
 	MemoryUsageThreshold:      80,                                      // 80%
 	MemoryCleanupInterval:     0,                                       // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
 	MaintenanceWarningMessage: "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。", // 默认的维护警告消息
+	UsePerfThreads:            true,                                    // 默认启用多线程优化
 }
 
 const (
@@ -101,7 +103,7 @@ func fix(config *Config) {
 	if config.AdminPassword == "" {
 		config.AdminPassword = defaultConfig.AdminPassword
 	}
-	if config.MemoryCleanupInterval == 0 {
+	if config.MemoryCleanupInterval < 0 {
 		config.MemoryCleanupInterval = 0
 	}
 	if config.MaintenanceWarningMessage == "" {

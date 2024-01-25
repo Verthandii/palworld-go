@@ -38,6 +38,7 @@ https://github.com/Hoshinonyaruko/palworld-go
 | memoryUsageThreshold      | 80                                           | 重启阈值（百分比）                     |
 | memoryCleanupInterval     | 0                                            | 内存清理时间间隔（秒）                   |
 | maintenanceWarningMessage | 服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。        | 维护警告消息                        |
+| usePerfThreads            | true                                         | 多线程优化                         |
 
 ## 兼容性
 
