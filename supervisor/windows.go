@@ -16,7 +16,8 @@ import (
 )
 
 type supervisor struct {
-	c *rcon.Client
+	c      *rcon.Client
+	config *config.Config
 }
 
 func New() (Supervisor, error) {
@@ -27,13 +28,13 @@ func New() (Supervisor, error) {
 	}
 
 	return &supervisor{
-		c: c,
+		c:      c,
+		config: cfg,
 	}, nil
 }
 
 func (s *supervisor) Start(ctx context.Context) {
-	cfg := config.CFG()
-	checkDuration := time.Duration(cfg.CheckInterval) * time.Second
+	checkDuration := time.Duration(s.config.CheckInterval) * time.Second
 	ticker := time.NewTicker(checkDuration)
 	defer ticker.Stop()
 
@@ -52,17 +53,16 @@ func (s *supervisor) Start(ctx context.Context) {
 }
 
 func (s *supervisor) isAlive() bool {
-	cfg := config.CFG()
-	out, err := exec.Command("tasklist", "/FI", fmt.Sprintf("IMAGENAME eq %s", cfg.ProcessName)).Output()
+	out, err := exec.Command("tasklist", "/FI", fmt.Sprintf("IMAGENAME eq %s", s.config.ProcessName)).Output()
 	if err != nil {
 		log.Printf("Supervisor 健康检查失败 【%v】\n", err)
 		return false
 	}
-	return strings.Contains(string(out), cfg.ProcessName)
+	return strings.Contains(string(out), s.config.ProcessName)
 }
 
 func (s *supervisor) restart() {
-	cfg := config.CFG()
+	cfg := s.config
 	command := filepath.Join(cfg.GamePath, cfg.ProcessName)
 	cmd := exec.Command(command)
 	cmd.Dir = cfg.GamePath // 设置工作目录为游戏路径
