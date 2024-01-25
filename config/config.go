@@ -10,10 +10,10 @@ import (
 type Config struct {
 	GamePath                  string  `json:"gamePath"`                  // 游戏可执行文件路径PalServer.exe所处的位置
 	Address                   string  `json:"address"`                   // 服务器 IP 地址
-	RCONPort                  string  `json:"rconPort"`                  // RCON 端口号
 	AdminPassword             string  `json:"adminPassword"`             // RCON 管理员密码
 	ProcessName               string  `json:"processName"`               // 进程名称 PalServer.exe
 	CheckInterval             int     `json:"checkInterval"`             // 进程存活检查时间（秒）
+	RCONPort                  string  `json:"rconPort"`                  // RCON 端口号
 	MemoryCheckInterval       int     `json:"memoryCheckInterval"`       // 内存占用检测时间（秒）
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
 	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理时间间隔（秒）
@@ -41,25 +41,24 @@ const (
 	processName = "PalServer.exe"
 )
 
-func init() {
-	var config *Config
+func Init() *Config {
 	data, err := os.ReadFile(configFile)
 	if err != nil {
 		log.Println("无法读取配置文件, 正在创建默认配置...")
 		createDefaultConfig()
-		return
+		return defaultConfig
 	}
 
+	var config *Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		log.Println("配置解析失败, 正在使用默认配置...")
-		return
+		return defaultConfig
 	}
 
 	fix(config)
+	return config
 }
-
-func CFG() *Config { return defaultConfig }
 
 func createDefaultConfig() {
 	data, err := json.MarshalIndent(defaultConfig, "", "    ")
@@ -90,7 +89,7 @@ func fix(config *Config) {
 	}
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
-		log.Printf("当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下", config.ProcessName, config.ProcessName)
+		log.Printf("当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
 		os.Exit(1)
 	}
 
@@ -101,7 +100,23 @@ func fix(config *Config) {
 		config.Address = defaultConfig.Address
 	}
 	if config.AdminPassword == "" {
-		config.AdminPassword = defaultConfig.AdminPassword
+		log.Printf("配置文件错误: RCON 密码未填写\n")
+		os.Exit(1)
+	}
+	if config.ProcessName == "" {
+		config.ProcessName = processName
+	}
+	if config.CheckInterval < 0 {
+		config.CheckInterval = defaultConfig.CheckInterval
+	}
+	if config.RCONPort == "" {
+		config.RCONPort = defaultConfig.RCONPort
+	}
+	if config.MemoryCheckInterval < 0 {
+		config.MemoryCheckInterval = defaultConfig.MemoryCheckInterval
+	}
+	if config.MemoryUsageThreshold <= 0 {
+		config.MemoryUsageThreshold = defaultConfig.MemoryUsageThreshold
 	}
 	if config.MemoryCleanupInterval < 0 {
 		config.MemoryCleanupInterval = 0

@@ -10,9 +10,12 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-	cfg := config.CFG()
-	spvr, err := supervisor.New()
+	var (
+		ctx = context.Background()
+		cfg = config.Init()
+	)
+
+	spvr, err := supervisor.New(cfg)
 	if err != nil {
 		panic(err)
 	}

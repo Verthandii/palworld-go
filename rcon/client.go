@@ -28,17 +28,19 @@ const (
 
 // Client .
 type Client struct {
+	c    *config.Config
 	conn *rcon.Conn
 }
 
 // New .
-func New(address, password string) (*Client, error) {
-	conn, err := rcon.Dial(address, password)
+func New(c *config.Config) (*Client, error) {
+	conn, err := rcon.Dial(c.Address, c.AdminPassword)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{
+		c:    c,
 		conn: conn,
 	}, nil
 }
@@ -54,7 +56,7 @@ func (c *Client) Close() {
 // HandleMemoryUsage 发广播 重启维护
 func (c *Client) HandleMemoryUsage(threshold float64) {
 	c.Broadcast(fmt.Sprintf("broadcast Memory_Is_Above_%v%%", threshold))
-	c.Broadcast(config.CFG().MaintenanceWarningMessage)
+	c.Broadcast(c.c.MaintenanceWarningMessage)
 	c.Save()
 	c.Shutdown("60", "Reboot_In_60_Seconds")
 }

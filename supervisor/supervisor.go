@@ -20,9 +20,8 @@ type supervisor struct {
 	config *config.Config
 }
 
-func New() (Supervisor, error) {
-	cfg := config.CFG()
-	c, err := rcon.New(cfg.Address, cfg.AdminPassword)
+func New(cfg *config.Config) (Supervisor, error) {
+	c, err := rcon.New(cfg)
 	if err != nil {
 		return nil, err
 	}

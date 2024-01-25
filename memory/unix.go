@@ -45,7 +45,7 @@ func (cleaner *cleaner) rebootClean() {
 
 	if memoryUsage > threshold {
 		log.Printf("内存占用超过 %v, 开始清理内存...\n", threshold)
-		c, err := rcon.New(cfg.Address, cfg.AdminPassword)
+		c, err := rcon.New(cfg)
 		if err != nil {
 			log.Printf("rcon 客户端启动失败 【%v】\n", err)
 			return
