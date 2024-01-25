@@ -24,7 +24,7 @@ func (cleaner *cleaner) scheduleAll(ctx context.Context) {
 	rebootCleanDuration := time.Duration(cleaner.c.MemoryCheckInterval) * time.Second
 	cleanDuration := time.Duration(cleaner.c.MemoryCleanupInterval) * time.Second
 	rebootCleanTicker := time.NewTicker(rebootCleanDuration)
-	cleanTicker := time.NewTicker(rebootCleanDuration)
+	cleanTicker := time.NewTicker(cleanDuration)
 	for {
 		select {
 		case <-ctx.Done():
