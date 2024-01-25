@@ -65,6 +65,11 @@ https://github.com/Hoshinonyaruko/palworld-go
 
 `windows` 通过了测试，`linux` 有待测试
 
+## 计划
+
+- [x] 启动
+- [ ] 服务器配置UI 
+
 ## 场景支持
 
 内存不足的时候，通过 `rcon` 通知服务器成员，然后重启服务器
