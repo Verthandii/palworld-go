@@ -29,16 +29,17 @@ var defaultConfig = &Config{
 	ProcessName:               processName,
 	CheckInterval:             30, // 30 秒
 	RCONPort:                  "25575",
-	MemoryCheckInterval:       30,                                      // 30 秒
-	MemoryUsageThreshold:      80,                                      // 80%
-	MemoryCleanupInterval:     0,                                       // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
+	MemoryCheckInterval:       30,                                                                     // 30 秒
+	MemoryUsageThreshold:      80,                                                                     // 80%
+	MemoryCleanupInterval:     0,                                                                      // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
 	MaintenanceWarningMessage: "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。", // 默认的维护警告消息
-	UsePerfThreads:            true,                                    // 默认启用多线程优化
+	UsePerfThreads:            true,                                                                   // 默认启用多线程优化
 }
 
 const (
-	configFile  = "config.json"
-	processName = "PalServer.exe"
+	gameDefaultConfigFile = "DefaultPalWorldSettings.ini"
+	configFile            = "config.json"
+	processName           = "PalServer.exe"
 )
 
 func Init() *Config {
@@ -124,4 +125,7 @@ func fix(config *Config) {
 	if config.MaintenanceWarningMessage == "" {
 		config.MaintenanceWarningMessage = "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。"
 	}
+
+	// TODO 修改游戏配置 ini
+
 }
