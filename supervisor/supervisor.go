@@ -2,12 +2,13 @@ package supervisor
 
 import (
 	"context"
-	"github.com/Verthandii/palworld-go/config"
-	"github.com/Verthandii/palworld-go/rcon"
 	"log"
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/Verthandii/palworld-go/config"
+	"github.com/Verthandii/palworld-go/rcon"
 )
 
 type Supervisor interface {
