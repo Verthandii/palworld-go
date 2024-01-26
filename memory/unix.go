@@ -54,7 +54,24 @@ func (cleaner *cleaner) rebootClean() {
 	}
 }
 
+var cleanSh = "clean_memory.sh"
+
 // clean 暂无清理内存的方法
 func (cleaner *cleaner) clean() {
-	return
+	_, free := cleaner.getMemoryInfo()
+	log.Printf("【Memory】空闲内存【%d】MB, 正在清理内存....\n", free)
+	cmd := exec.Command("sh", cleanSh)
+	err := cmd.Run()
+	if err != nil {
+		log.Printf("【Memory】运行 RAMMap 时发生错误 【%v】\n", err)
+		if strings.Contains(err.Error(), "The requested operation requires elevation") {
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+		}
+	}
+	_, free = cleaner.getMemoryInfo()
+	log.Printf("【Memory】清理内存成功, 空闲内存【%d】MB\n", free)
 }
