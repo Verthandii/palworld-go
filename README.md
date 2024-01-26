@@ -44,11 +44,10 @@ TODO
 | 配置项                       | 推荐值                                                       | 备注                            |
 |---------------------------|-----------------------------------------------------------|-------------------------------|
 | gamePath                  | "D:\Program Files (x86)\Steam\steamapps\common\PalServer" | 游戏可执行文件路径 PalServer.exe 所处的位置 |
-| address                   | "127.0.0.1:25575"                                         | 服务器 IP 地址                     |
+| address                   | "127.0.0.1:25575"                                         | 服务器地址 + RCON 端口               |
 | adminPassword             | "WqB6oY7IzMffxF17Q8La"                                    | RCON 管理员密码                    |
 | processName               | "PalServer.exe"                                           | 进程名称 PalServer.exe            |
 | checkInterval             | 5                                                         | 进程存活检查时间（秒）                   |
-| rconPort                  | "25575"                                                   | RCON 端口号                      |
 | memoryUsageThreshold      | 80                                                        | 重启阈值（百分比）                     |
 | memoryCleanupInterval     | 3600                                                      | 内存清理时间间隔（秒）                   |
 | maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息（不支持中文且不支持空格）           |
@@ -58,6 +57,7 @@ TODO
 
 - [x] 服务器进程保活
 - [x] 服务器内存清理
+- [x] 自动备份
 - [ ] 通过页面修改游戏配置（如经验值倍率）
 
 ## 特别鸣谢+推荐

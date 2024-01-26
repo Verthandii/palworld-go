@@ -20,7 +20,6 @@ type Config struct {
 	AdminPassword             string  `json:"adminPassword"`             // RCON 管理员密码
 	ProcessName               string  `json:"processName"`               // 进程名称 PalServer.exe
 	CheckInterval             int     `json:"checkInterval"`             // 进程存活检查时间（秒）
-	RCONPort                  string  `json:"rconPort"`                  // RCON 端口号
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
 	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理时间间隔（秒）
 	MaintenanceWarningMessage string  `json:"maintenanceWarningMessage"` // 维护警告消息
@@ -33,7 +32,6 @@ func (c *Config) PrintLog() {
 	log.Printf("【Config】RCON 管理员密码【%s】\n", c.AdminPassword)
 	log.Printf("【Config】进程名称【%s】\n", c.ProcessName)
 	log.Printf("【Config】进程存活检查时间【%d】秒\n", c.CheckInterval)
-	log.Printf("【Config】RCON 端口号【%s】\n", c.RCONPort)
 	log.Printf("【Config】重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
 	log.Printf("【Config】内存清理时间间隔【%d】秒\n", c.MemoryCleanupInterval)
 	log.Printf("【Config】维护警告消息【%s】\n", c.MaintenanceWarningMessage)
@@ -47,7 +45,6 @@ var defaultConfig = &Config{
 	AdminPassword:             "WqB6oY7IzMffxF17Q8La",
 	ProcessName:               processName,
 	CheckInterval:             5,
-	RCONPort:                  "25575",
 	MemoryUsageThreshold:      80,
 	MemoryCleanupInterval:     3600,
 	MaintenanceWarningMessage: "Memory_Not_Enough_The_Server_Will_Reboot",
@@ -129,9 +126,6 @@ func fix(config *Config) {
 	}
 	if config.CheckInterval < 0 {
 		config.CheckInterval = defaultConfig.CheckInterval
-	}
-	if config.RCONPort == "" {
-		config.RCONPort = defaultConfig.RCONPort
 	}
 	if config.MemoryUsageThreshold <= 0 {
 		config.MemoryUsageThreshold = defaultConfig.MemoryUsageThreshold
