@@ -13,7 +13,7 @@ import (
 	"github.com/Verthandii/palworld-go/rcon"
 )
 
-//go:embed RAMMap64.exe
+//go:embed clean_memory.sh
 var cleanMemoryFS embed.FS
 
 var cleanMemoryFile string
