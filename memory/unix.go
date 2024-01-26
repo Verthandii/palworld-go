@@ -1,4 +1,4 @@
-//go:build unix
+//go:build linux
 
 package memory
 
@@ -13,11 +13,7 @@ import (
 	"github.com/Verthandii/palworld-go/rcon"
 )
 
-type cleaner struct {
-	c *config.Config
-}
-
-func NewCleaner(c *config.Config, ch chan<- struct{}) Cleaner {
+func NewCleaner(c *config.Config, ch chan<- time.Duration) Cleaner {
 	return &cleaner{
 		c:  c,
 		ch: ch,
