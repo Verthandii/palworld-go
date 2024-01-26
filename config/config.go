@@ -49,10 +49,10 @@ var defaultConfig = &Config{
 	AdminPassword:             "WqB6oY7IzMffxF17Q8La",
 	ProcessName:               processName,
 	ProcessCheckInterval:      5,
-	MemoryUsageThreshold:      80,
-	MemoryCleanupInterval:     3600,
+	MemoryUsageThreshold:      75,
+	MemoryCleanupInterval:     600,
 	BackupPath:                "",
-	BackupInterval:            3600,
+	BackupInterval:            1800,
 	MaintenanceWarningMessage: "Memory_Not_Enough_The_Server_Will_Reboot",
 	UsePerfThreads:            true,
 }

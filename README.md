@@ -64,10 +64,10 @@ TODO
 | adminPassword             | "WqB6oY7IzMffxF17Q8La"                                    | RCON 管理员密码                    |
 | processName               | "PalServer.exe"                                           | 进程名称 PalServer.exe            |
 | processCheckInterval      | 5                                                         | 进程存活检查间隔（秒）                   |
-| memoryUsageThreshold      | 80                                                        | 重启阈值（百分比）                     |
-| memoryCleanupInterval     | 3600                                                      | 内存清理间隔（秒）0 表示不清理内存            |
+| memoryUsageThreshold      | 75                                                        | 重启阈值（百分比）                     |
+| memoryCleanupInterval     | 600                                                       | 内存清理间隔（秒）0 表示不清理内存            |
 | backupPath                | "D:\Program Files (x86)\backup\PalServer"                 | 备份路径                          |
-| backupInterval            | 3600                                                      | 备份间隔（秒） 0 表示不备份               |
+| backupInterval            | 1800                                                      | 备份间隔（秒） 0 表示不备份               |
 | maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息（不支持中文且不支持空格）           |
 | usePerfThreads            | true                                                      | 多线程优化                         |
 
