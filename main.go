@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/Verthandii/palworld-go/config"
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	fmt.Println("★《幻兽帕鲁》启动器加载成功★")
+
 	var (
 		ctx = context.Background()
 		cfg = config.Init()

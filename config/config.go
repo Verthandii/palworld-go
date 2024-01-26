@@ -136,7 +136,7 @@ func fix(config *Config) {
 	copyGameConfig(config, false)
 	configMap := parseGameConfig(config)
 	configMap["RCONEnabled"] = "True"
-	configMap["AdminPassword"] = config.AdminPassword
+	configMap["AdminPassword"] = fmt.Sprintf(`"%s"`, config.AdminPassword)
 	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
 	if err != nil {
 		log.Printf("更新游戏配置文件失败【%v】", err)
