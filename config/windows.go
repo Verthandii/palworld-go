@@ -3,9 +3,9 @@
 package config
 
 import (
-	"path"
+	"path/filepath"
 )
 
 var (
-	gameConfigFile = path.Join("Pal", "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")
+	gameConfigFile = filepath.Join("Pal", "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")
 )

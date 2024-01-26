@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,24 +17,28 @@ import (
 
 type Config struct {
 	GamePath                  string  `json:"gamePath"`                  // 游戏可执行文件路径 PalServer.exe 所处的位置
-	Address                   string  `json:"address"`                   // 服务器 IP 地址
+	Address                   string  `json:"address"`                   // 服务器地址 + RCON 端口
 	AdminPassword             string  `json:"adminPassword"`             // RCON 管理员密码
 	ProcessName               string  `json:"processName"`               // 进程名称 PalServer.exe
-	CheckInterval             int     `json:"checkInterval"`             // 进程存活检查时间（秒）
+	ProcessCheckInterval      int     `json:"processCheckInterval"`      // 进程存活检查间隔（秒）
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
-	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理时间间隔（秒）
-	MaintenanceWarningMessage string  `json:"maintenanceWarningMessage"` // 维护警告消息
+	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理间隔（秒）
+	BackupPath                string  `json:"backupPath"`                // 备份路径
+	BackupInterval            int     `json:"backupInterval"`            // 备份间隔（秒）
+	MaintenanceWarningMessage string  `json:"maintenanceWarningMessage"` // 维护警告消息（不支持中文且不支持空格）
 	UsePerfThreads            bool    `json:"usePerfThreads"`            // 多线程优化
 }
 
 func (c *Config) PrintLog() {
 	log.Printf("【Config】游戏服务器目录【%s】\n", c.GamePath)
-	log.Printf("【Config】服务器 IP 地址【%s】\n", c.Address)
+	log.Printf("【Config】服务器地址 + RCON 端口【%s】\n", c.Address)
 	log.Printf("【Config】RCON 管理员密码【%s】\n", c.AdminPassword)
 	log.Printf("【Config】进程名称【%s】\n", c.ProcessName)
-	log.Printf("【Config】进程存活检查时间【%d】秒\n", c.CheckInterval)
+	log.Printf("【Config】进程存活检查间隔【%d】秒\n", c.ProcessCheckInterval)
 	log.Printf("【Config】重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
-	log.Printf("【Config】内存清理时间间隔【%d】秒\n", c.MemoryCleanupInterval)
+	log.Printf("【Config】内存清理间隔【%d】秒\n", c.MemoryCleanupInterval)
+	log.Printf("【Config】备份路径【%s】\n", c.BackupPath)
+	log.Printf("【Config】备份间隔【%d】秒\n", c.BackupInterval)
 	log.Printf("【Config】维护警告消息【%s】\n", c.MaintenanceWarningMessage)
 	log.Printf("【Config】多线程优化【%v】\n", c.UsePerfThreads)
 }
@@ -44,9 +49,11 @@ var defaultConfig = &Config{
 	Address:                   "127.0.0.1:25575",
 	AdminPassword:             "WqB6oY7IzMffxF17Q8La",
 	ProcessName:               processName,
-	CheckInterval:             5,
+	ProcessCheckInterval:      5,
 	MemoryUsageThreshold:      80,
 	MemoryCleanupInterval:     3600,
+	BackupPath:                "",
+	BackupInterval:            3600,
 	MaintenanceWarningMessage: "Memory_Not_Enough_The_Server_Will_Reboot",
 	UsePerfThreads:            true,
 }
@@ -103,8 +110,9 @@ func fix(config *Config) {
 
 	gamePath := config.GamePath
 	if gamePath == "" {
-		gamePath = filepath.Join(currentDir, config.ProcessName)
+		gamePath = currentDir
 	}
+	gamePath = filepath.Join(currentDir, config.ProcessName)
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
 		log.Printf("【Config】当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
@@ -124,8 +132,8 @@ func fix(config *Config) {
 	if config.ProcessName == "" {
 		config.ProcessName = defaultConfig.ProcessName
 	}
-	if config.CheckInterval < 0 {
-		config.CheckInterval = defaultConfig.CheckInterval
+	if config.ProcessCheckInterval <= 0 {
+		config.ProcessCheckInterval = defaultConfig.ProcessCheckInterval
 	}
 	if config.MemoryUsageThreshold <= 0 {
 		config.MemoryUsageThreshold = defaultConfig.MemoryUsageThreshold
@@ -133,15 +141,28 @@ func fix(config *Config) {
 	if config.MemoryCleanupInterval < 0 {
 		config.MemoryCleanupInterval = defaultConfig.MemoryCleanupInterval
 	}
+	if config.BackupPath == "" {
+		config.BackupPath = filepath.Join(currentDir, "backup")
+	}
+	if config.BackupInterval < 0 {
+		config.BackupInterval = defaultConfig.BackupInterval
+	}
 	if config.MaintenanceWarningMessage == "" {
 		config.MaintenanceWarningMessage = defaultConfig.MaintenanceWarningMessage
+	}
+
+	_, rconPort, err := net.SplitHostPort(config.Address)
+	if err != nil {
+		log.Printf("【Config】配置文件错误: address 填写错误\n")
+		os.Exit(1)
 	}
 
 	copyGameConfig(config, false)
 	configMap := parseGameConfig(config)
 	configMap["RCONEnabled"] = "True"
+	configMap["RCONPort"] = rconPort
 	configMap["AdminPassword"] = fmt.Sprintf(`"%s"`, config.AdminPassword)
-	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
+	err = os.WriteFile(filepath.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
 	if err != nil {
 		log.Printf("【Config】更新游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
@@ -150,7 +171,7 @@ func fix(config *Config) {
 
 // copyGameConfig 如果没有游戏配置文件，则将默认的配置文件复制过去
 func copyGameConfig(c *Config, force bool) {
-	filePath := path.Join(c.GamePath, gameConfigFile)
+	filePath := filepath.Join(c.GamePath, gameConfigFile)
 	dir, _ := path.Split(filePath)
 
 	stat, err := os.Stat(dir)
@@ -175,7 +196,7 @@ func copyGameConfig(c *Config, force bool) {
 		return
 	}
 
-	defaultSetting, err := os.ReadFile(path.Join(c.GamePath, gameDefaultConfigFile))
+	defaultSetting, err := os.ReadFile(filepath.Join(c.GamePath, gameDefaultConfigFile))
 	if err != nil {
 		log.Printf("【Config】读取游戏默认配置失败【%v】\n", err)
 		os.Exit(1)
@@ -190,7 +211,7 @@ func copyGameConfig(c *Config, force bool) {
 }
 
 func parseGameConfig(c *Config) map[string]string {
-	f, err := ini.Load(path.Join(c.GamePath, gameConfigFile))
+	f, err := ini.Load(filepath.Join(c.GamePath, gameConfigFile))
 	if err != nil {
 		log.Printf("【Config】加载游戏配置文件失败【%v】\n", err)
 		os.Exit(1)

@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/Verthandii/palworld-go/config"
@@ -18,6 +19,8 @@ type cleaner struct {
 }
 
 func (cleaner *cleaner) Schedule(ctx context.Context) {
+	log.Printf("【Memory】启动成功，定时清理服务器内存\n")
+
 	if cleaner.c.MemoryCleanupInterval > 0 {
 		cleaner.scheduleAll(ctx)
 	} else {

@@ -27,11 +27,11 @@ func New(cfg *config.Config, ch <-chan time.Duration) (Supervisor, error) {
 }
 
 func (s *supervisor) Start(ctx context.Context) {
-	log.Printf("【Supervisor】开始守护游戏进程\n")
+	log.Printf("【Supervisor】启动成功，开始守护游戏进程\n")
 
 	s.restart()
 
-	checkDuration := time.Duration(s.config.CheckInterval) * time.Second
+	checkDuration := time.Duration(s.config.ProcessCheckInterval) * time.Second
 	ticker := time.NewTicker(checkDuration)
 	defer ticker.Stop()
 
