@@ -20,13 +20,15 @@
 
 通过调用微软的 [RAMMap](https://learn.microsoft.com/en-us/sysinternals/downloads/rammap) 释放无用内存，完美解决《幻兽帕鲁》服务器的内存泄漏问题。
 
+> 使用 RAMMap 时需要使用 fork/exec, 此操作需要您使用管理员权限打开终端
+
 ## 使用方法
 
 ### Windows Steam 客户端
 
-1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示。![打开目录](/pic/windows_steam_start.png)
-2. 复制目录到 `config.json` 的 `gamePath` 中
-3. 以管理员权限打开终端，运行[下载](https://github.com/Verthandii/palworld-go/release)好的可执行文件
+1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示 ![打开目录](/pic/windows_steam_start.png)
+2. 复制目录到 `config.json` 的 `gamePath` 中 ![打开目录](/pic/dir.png)
+3. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/release)好的可执行文件
 
 ### Windows SteamCMD
 
