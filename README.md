@@ -27,12 +27,13 @@
 ### Windows Steam 客户端
 
 1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示 ![打开目录](/pic/windows_steam_start.png)
-2. 复制目录到 `config.json` 的 `gamePath` 中 ![打开目录](/pic/dir.png)
-3. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/release)好的可执行文件
+2. 将目录粘贴到 `config.json` 的 `gamePath` 中 ![打开目录](/pic/dir.png)
+3. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/releases)好的可执行文件
 
 ### Windows SteamCMD
 
-TODO
+1. 将服务器目录粘贴到 `config.json` 的 `gamePath` 中
+2. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/releases)好的可执行文件
 
 ### Linux SteamCMD
 

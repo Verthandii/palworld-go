@@ -1,11 +1,11 @@
 {
-    "gamePath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\PalServer",
+    "gamePath": "",
     "address": "127.0.0.1:25575",
     "adminPassword": "WqB6oY7IzMffxF17Q8La",
     "processName": "PalServer.exe",
     "checkInterval": 5,
     "rconPort": "25575",
-    "memoryUsageThreshold": 50,
+    "memoryUsageThreshold": 80,
     "memoryCleanupInterval": 3600,
     "maintenanceWarningMessage": "Memory_Not_Enough_The_Server_Will_Reboot",
     "usePerfThreads": true
