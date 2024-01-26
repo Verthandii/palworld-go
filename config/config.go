@@ -171,7 +171,7 @@ func copyGameConfig(c *Config, force bool) {
 		return
 	}
 
-	defaultSetting, err := os.ReadFile(path.Join(c.GamePath, "DefaultPalWorldSettings.ini"))
+	defaultSetting, err := os.ReadFile(path.Join(c.GamePath, gameDefaultConfigFile))
 	if err != nil {
 		log.Printf("读取游戏默认配置失败【%v】", err)
 		os.Exit(1)
