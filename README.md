@@ -43,7 +43,7 @@ https://github.com/Hoshinonyaruko/palworld-go
 | memoryCheckInterval       | 70                                                        | 内存占用检测时间（秒）                   |
 | memoryUsageThreshold      | 80                                                        | 重启阈值（百分比）                     |
 | memoryCleanupInterval     | 3600                                                      | 内存清理时间间隔（秒）                   |
-| maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息                        |
+| maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息（不支持中文且不支持空格）           |
 | usePerfThreads            | true                                                      | 多线程优化                         |
 
 ## 兼容性
