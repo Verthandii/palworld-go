@@ -32,19 +32,19 @@ https://github.com/Hoshinonyaruko/palworld-go
 
 ## 配置文件描述
 
-| 配置项                       | 推荐值                                          | 备注                            |
-|---------------------------|----------------------------------------------|-------------------------------|
-| gamePath                  | "C:\\steamcmd\\steamapps\\common\\PalServer" | 游戏可执行文件路径 PalServer.exe 所处的位置 |
-| address                   | "127.0.0.1:25575"                            | 服务器 IP 地址                     |
-| rconPort                  | "25575"                                      | RCON 端口号                      |
-| adminPassword             | "pwd"                                        | RCON 管理员密码                    |
-| processName               | "PalServer.exe"                              | 进程名称 PalServer.exe            |
-| checkInterval             | 30                                           | 进程存活检查时间（秒）                   |
-| memoryCheckInterval       | 30                                           | 内存占用检测时间（秒）                   |
-| memoryUsageThreshold      | 80                                           | 重启阈值（百分比）                     |
-| memoryCleanupInterval     | 0                                            | 内存清理时间间隔（秒）                   |
-| maintenanceWarningMessage | 服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。        | 维护警告消息                        |
-| usePerfThreads            | true                                         | 多线程优化                         |
+| 配置项                       | 推荐值                                                       | 备注                            |
+|---------------------------|-----------------------------------------------------------|-------------------------------|
+| gamePath                  | "D:\Program Files (x86)\Steam\steamapps\common\PalServer" | 游戏可执行文件路径 PalServer.exe 所处的位置 |
+| address                   | "127.0.0.1:25575"                                         | 服务器 IP 地址                     |
+| adminPassword             | "WqB6oY7IzMffxF17Q8La"                                    | RCON 管理员密码                    |
+| processName               | "PalServer.exe"                                           | 进程名称 PalServer.exe            |
+| checkInterval             | 5                                                         | 进程存活检查时间（秒）                   |
+| rconPort                  | "25575"                                                   | RCON 端口号                      |
+| memoryCheckInterval       | 70                                                        | 内存占用检测时间（秒）                   |
+| memoryUsageThreshold      | 80                                                        | 重启阈值（百分比）                     |
+| memoryCleanupInterval     | 3600                                                      | 内存清理时间间隔（秒）                   |
+| maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息                        |
+| usePerfThreads            | true                                                      | 多线程优化                         |
 
 ## 兼容性
 

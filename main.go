@@ -18,6 +18,7 @@ func main() {
 		cfg = config.Init()
 	)
 
+	cfg.PrintLog()
 	spvr, err := supervisor.New(cfg)
 	if err != nil {
 		panic(err)

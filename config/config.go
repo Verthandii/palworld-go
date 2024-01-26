@@ -28,19 +28,33 @@ type Config struct {
 	UsePerfThreads            bool    `json:"usePerfThreads"`            // 多线程优化
 }
 
+func (c *Config) PrintLog() {
+	log.Printf("【Config】游戏服务器目录【%s】\n", c.GamePath)
+	log.Printf("【Config】服务器 IP 地址【%s】\n", c.Address)
+	log.Printf("【Config】RCON 管理员密码【%s】\n", c.AdminPassword)
+	log.Printf("【Config】进程名称【%s】\n", c.ProcessName)
+	log.Printf("【Config】进程存活检查时间【%d】秒\n", c.CheckInterval)
+	log.Printf("【Config】RCON 端口号【%s】\n", c.RCONPort)
+	log.Printf("【Config】内存占用检测时间【%d】秒\n", c.MemoryCheckInterval)
+	log.Printf("【Config】重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
+	log.Printf("【Config】内存清理时间间隔【%d】秒\n", c.MemoryCleanupInterval)
+	log.Printf("【Config】维护警告消息【%s】\n", c.MaintenanceWarningMessage)
+	log.Printf("【Config】多线程优化【%v】\n", c.UsePerfThreads)
+}
+
 // 默认配置
 var defaultConfig = &Config{
 	GamePath:                  "",
 	Address:                   "127.0.0.1:25575",
-	AdminPassword:             "default_password",
+	AdminPassword:             "WqB6oY7IzMffxF17Q8La",
 	ProcessName:               processName,
-	CheckInterval:             30, // 30 秒
+	CheckInterval:             5,
 	RCONPort:                  "25575",
-	MemoryCheckInterval:       30,                                      // 30 秒
-	MemoryUsageThreshold:      80,                                      // 80%
-	MemoryCleanupInterval:     0,                                       // 内存清理时间间隔，设为半小时（1800秒）0代表不清理
-	MaintenanceWarningMessage: "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。", // 默认的维护警告消息
-	UsePerfThreads:            true,                                    // 默认启用多线程优化
+	MemoryCheckInterval:       70,
+	MemoryUsageThreshold:      80,
+	MemoryCleanupInterval:     3600,
+	MaintenanceWarningMessage: "Memory_Not_Enough_The_Server_Will_Reboot",
+	UsePerfThreads:            true,
 }
 
 const (
@@ -52,7 +66,7 @@ const (
 func Init() *Config {
 	data, err := os.ReadFile(configFile)
 	if err != nil {
-		log.Println("无法读取配置文件, 正在创建默认配置...")
+		log.Printf("【Config】无法读取配置文件, 正在创建默认配置...\n")
 		createDefaultConfig()
 		return defaultConfig
 	}
@@ -60,34 +74,36 @@ func Init() *Config {
 	var config *Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		log.Println("配置解析失败, 正在使用默认配置...")
+		log.Printf("【Config】配置解析失败, 正在使用默认配置...\n")
 		return defaultConfig
 	}
 
 	fix(config)
+	log.Printf("【Config】配置文件已生效\n")
+
 	return config
 }
 
 func createDefaultConfig() {
 	data, err := json.MarshalIndent(defaultConfig, "", "    ")
 	if err != nil {
-		log.Println("无法创建默认配置文件:", err)
+		log.Printf("【Config】无法创建默认配置文件【%v】\n", err)
 		os.Exit(1)
 	}
 
 	err = os.WriteFile(configFile, data, 0666)
 	if err != nil {
-		log.Println("无法写入默认配置文件:", err)
+		log.Printf("【Config】无法写入默认配置文件【%v】\n", err)
 		os.Exit(1)
 	}
 
-	log.Println("默认配置文件已创建:", configFile)
+	log.Printf("【Config】默认配置文件创建成功\n")
 }
 
 func fix(config *Config) {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		log.Printf("工作目录获取失败【%v】\n", err)
+		log.Printf("【Config】工作目录获取失败【%v】\n", err)
 		os.Exit(1)
 	}
 
@@ -97,7 +113,7 @@ func fix(config *Config) {
 	}
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
-		log.Printf("当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
+		log.Printf("【Config】当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
 		os.Exit(1)
 	}
 
@@ -108,11 +124,11 @@ func fix(config *Config) {
 		config.Address = defaultConfig.Address
 	}
 	if config.AdminPassword == "" {
-		log.Printf("配置文件错误: RCON 密码未填写\n")
+		log.Printf("【Config】配置文件错误: RCON 密码未填写\n")
 		os.Exit(1)
 	}
 	if config.ProcessName == "" {
-		config.ProcessName = processName
+		config.ProcessName = defaultConfig.ProcessName
 	}
 	if config.CheckInterval < 0 {
 		config.CheckInterval = defaultConfig.CheckInterval
@@ -127,10 +143,10 @@ func fix(config *Config) {
 		config.MemoryUsageThreshold = defaultConfig.MemoryUsageThreshold
 	}
 	if config.MemoryCleanupInterval < 0 {
-		config.MemoryCleanupInterval = 0
+		config.MemoryCleanupInterval = defaultConfig.MemoryCleanupInterval
 	}
 	if config.MaintenanceWarningMessage == "" {
-		config.MaintenanceWarningMessage = "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。"
+		config.MaintenanceWarningMessage = defaultConfig.MaintenanceWarningMessage
 	}
 
 	copyGameConfig(config, false)
@@ -139,7 +155,7 @@ func fix(config *Config) {
 	configMap["AdminPassword"] = fmt.Sprintf(`"%s"`, config.AdminPassword)
 	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
 	if err != nil {
-		log.Printf("更新游戏配置文件失败【%v】", err)
+		log.Printf("【Config】更新游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 }
@@ -152,14 +168,14 @@ func copyGameConfig(c *Config, force bool) {
 	stat, err := os.Stat(dir)
 	if err == nil {
 		if !stat.IsDir() {
-			log.Printf("游戏目录损坏, 请重新下载游戏")
+			log.Printf("【Config】游戏目录损坏, 请重新下载游戏\n")
 			os.Exit(1)
 		}
 	}
 
 	if os.IsNotExist(err) {
 		if err = os.MkdirAll(dir, 0777); err != nil {
-			log.Printf("创建游戏目录失败【%v】", err)
+			log.Printf("【Config】创建游戏目录失败【%v】\n", err)
 			os.Exit(1)
 		}
 	}
@@ -173,27 +189,27 @@ func copyGameConfig(c *Config, force bool) {
 
 	defaultSetting, err := os.ReadFile(path.Join(c.GamePath, gameDefaultConfigFile))
 	if err != nil {
-		log.Printf("读取游戏默认配置失败【%v】", err)
+		log.Printf("【Config】读取游戏默认配置失败【%v】\n", err)
 		os.Exit(1)
 	}
 
 	if err = os.WriteFile(filePath, defaultSetting, 0666); err != nil {
-		log.Printf("生成游戏配置文件失败【%v】", err)
+		log.Printf("【Config】生成游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 
-	log.Printf("生成游戏配置文件成功\n")
+	log.Printf("【Config】生成游戏配置文件成功\n")
 }
 
 func parseGameConfig(c *Config) map[string]string {
 	f, err := ini.Load(path.Join(c.GamePath, gameConfigFile))
 	if err != nil {
-		log.Printf("加载游戏配置文件失败【%v】", err)
+		log.Printf("【Config】加载游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 	kvs := f.Section("/Script/Pal.PalGameWorldSettings").Key("OptionSettings").Strings(",")
 	if len(kvs) < 2 {
-		log.Printf("游戏配置文件损坏, 重新生成")
+		log.Printf("【Config】游戏配置文件损坏, 重新生成\n")
 		copyGameConfig(c, true)
 		return parseGameConfig(c)
 	}
@@ -202,7 +218,7 @@ func parseGameConfig(c *Config) map[string]string {
 	for _, kv := range kvs {
 		pair := strings.SplitN(kv, "=", 2)
 		if len(pair) != 2 {
-			log.Printf("游戏配置文件损坏, 重新生成")
+			log.Printf("【Config】游戏配置文件损坏, 重新生成\n")
 			copyGameConfig(c, true)
 			return parseGameConfig(c)
 		}

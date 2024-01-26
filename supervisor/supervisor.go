@@ -25,6 +25,8 @@ func New(cfg *config.Config) (Supervisor, error) {
 }
 
 func (s *supervisor) Start(ctx context.Context) {
+	log.Printf("【Supervisor】开始守护游戏进程\n")
+
 	s.restart()
 
 	checkDuration := time.Duration(s.config.CheckInterval) * time.Second
@@ -34,27 +36,31 @@ func (s *supervisor) Start(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("退出 Supervisor")
+			log.Printf("【Supervisor】成功退出\n")
 			return
 		case <-ticker.C:
-			if !s.isAlive() {
-				s.restart()
-			}
+			s.restart()
 			ticker.Reset(checkDuration)
 		}
 	}
 }
 
 func (s *supervisor) restart() {
+	if s.isAlive() {
+		log.Printf("【Supervisor】ALIVE\n")
+		return
+	}
+	log.Printf("【Supervisor】正在尝试重新启动服务器\n")
+
 	cfg := s.config
 	initCommand := filepath.Join(cfg.GamePath, cfg.ProcessName)
 
 	cmd := exec.Command(initCommand, s.usePerfThreads()...)
 	cmd.Dir = cfg.GamePath // 设置工作目录为游戏路径
 	if err := cmd.Start(); err != nil {
-		log.Printf("服务器启动失败【%v】\n", err)
+		log.Printf("【Supervisor】服务器启动失败【%v】\n", err)
 	} else {
-		log.Printf("服务器启动成功\n")
+		log.Printf("【Supervisor】服务器启动成功\n")
 	}
 }
 

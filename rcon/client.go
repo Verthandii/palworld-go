@@ -49,7 +49,7 @@ func New(c *config.Config) (*Client, error) {
 func (c *Client) Close() {
 	err := c.conn.Close()
 	if err != nil {
-		log.Printf("关闭 RCON 连接时发生错误: %v\n", err)
+		log.Printf("【RCON】关闭连接时发生错误: %v\n", err)
 	}
 }
 
@@ -119,6 +119,8 @@ func (c *Client) exec(cmd CmdName, args ...string) {
 	}
 
 	if _, err := c.conn.Execute(cmdStr); err != nil {
-		log.Printf("execute [%s] error [%v]\n", cmdStr, err)
+		log.Printf("【RCON】执行命令【%s】时发生错误【%v】\n", cmdStr, err)
+	} else {
+		log.Printf("【RCON】执行命令【%s】\n", cmdStr)
 	}
 }

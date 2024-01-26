@@ -1,13 +1,13 @@
 {
     "gamePath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\PalServer",
     "address": "127.0.0.1:25575",
-    "adminPassword": "default_password",
+    "adminPassword": "WqB6oY7IzMffxF17Q8La",
     "processName": "PalServer.exe",
-    "checkInterval": 30,
+    "checkInterval": 5,
     "rconPort": "25575",
-    "memoryCheckInterval": 30,
-    "memoryUsageThreshold": 80,
-    "memoryCleanupInterval": 0,
-    "maintenanceWarningMessage": "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。",
+    "memoryCheckInterval": 60,
+    "memoryUsageThreshold": 50,
+    "memoryCleanupInterval": 3600,
+    "maintenanceWarningMessage": "Memory_Not_Enough_The_Server_Will_Reboot",
     "usePerfThreads": true
 }
