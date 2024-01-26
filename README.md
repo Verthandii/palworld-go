@@ -22,6 +22,8 @@
 
 **清理内存时需要使用 fork/exec, 此操作需要您使用管理员权限打开终端**
 
+![运行效果图3](/pic/palworld_go_3.png)
+
 #### Windows
 
 通过调用微软的 [RAMMap](https://learn.microsoft.com/en-us/sysinternals/downloads/rammap) 释放无用内存。
@@ -33,6 +35,8 @@
 ### 自动备份
 
 每经过配置好的时间间隔，对服务器所有数据进行备份，避免因为死档而导致游戏提前完结撒花。
+
+![运行效果图4](/pic/palworld_go_4.png)
 
 ## 使用方法
 
