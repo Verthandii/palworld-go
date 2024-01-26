@@ -42,7 +42,7 @@ func (cleaner *cleaner) rebootClean() {
 	}
 
 	if memoryUsage > threshold {
-		log.Printf("【Memory】内存占用超过【%v】, 重新启动游戏服务器\n", threshold)
+		log.Printf("【Memory】内存占用超过【%v】%%, 重新启动游戏服务器\n", threshold)
 		c, err := rcon.New(cfg)
 		if err != nil {
 			log.Printf("【Memory】RCON 客户端启动失败【%v】\n", err)

@@ -40,7 +40,6 @@ func (b *Backup) Schedule(ctx context.Context) {
 			ticker.Reset(duration)
 		}
 	}
-
 }
 
 func (b *Backup) backup() {
@@ -56,9 +55,9 @@ func (b *Backup) backup() {
 	dst := filepath.Join(backupDir, "Pal", "Saved")
 
 	if err := copyDir(src, dst); err != nil {
-		log.Printf("Failed to copy files for backup SaveGames: %v", err)
+		log.Printf("【Backup】备份失败【%v】\n", err)
 	} else {
-		log.Printf("Backup completed successfully: %s", dst)
+		log.Printf("【Backup】成功备份至【%s】\n", backupDir)
 	}
 }
 

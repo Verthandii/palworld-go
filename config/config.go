@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -112,7 +111,7 @@ func fix(config *Config) {
 	if gamePath == "" {
 		gamePath = currentDir
 	}
-	gamePath = filepath.Join(currentDir, config.ProcessName)
+	gamePath = filepath.Join(gamePath, config.ProcessName)
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
 		log.Printf("【Config】当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
@@ -172,7 +171,7 @@ func fix(config *Config) {
 // copyGameConfig 如果没有游戏配置文件，则将默认的配置文件复制过去
 func copyGameConfig(c *Config, force bool) {
 	filePath := filepath.Join(c.GamePath, gameConfigFile)
-	dir, _ := path.Split(filePath)
+	dir, _ := filepath.Split(filePath)
 
 	stat, err := os.Stat(dir)
 	if err == nil {
