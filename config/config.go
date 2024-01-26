@@ -15,13 +15,12 @@ import (
 )
 
 type Config struct {
-	GamePath                  string  `json:"gamePath"`                  // 游戏可执行文件路径PalServer.exe所处的位置
+	GamePath                  string  `json:"gamePath"`                  // 游戏可执行文件路径 PalServer.exe 所处的位置
 	Address                   string  `json:"address"`                   // 服务器 IP 地址
 	AdminPassword             string  `json:"adminPassword"`             // RCON 管理员密码
 	ProcessName               string  `json:"processName"`               // 进程名称 PalServer.exe
 	CheckInterval             int     `json:"checkInterval"`             // 进程存活检查时间（秒）
 	RCONPort                  string  `json:"rconPort"`                  // RCON 端口号
-	MemoryCheckInterval       int     `json:"memoryCheckInterval"`       // 内存占用检测时间（秒）
 	MemoryUsageThreshold      float64 `json:"memoryUsageThreshold"`      // 重启阈值（百分比）
 	MemoryCleanupInterval     int     `json:"memoryCleanupInterval"`     // 内存清理时间间隔（秒）
 	MaintenanceWarningMessage string  `json:"maintenanceWarningMessage"` // 维护警告消息
@@ -35,7 +34,6 @@ func (c *Config) PrintLog() {
 	log.Printf("【Config】进程名称【%s】\n", c.ProcessName)
 	log.Printf("【Config】进程存活检查时间【%d】秒\n", c.CheckInterval)
 	log.Printf("【Config】RCON 端口号【%s】\n", c.RCONPort)
-	log.Printf("【Config】内存占用检测时间【%d】秒\n", c.MemoryCheckInterval)
 	log.Printf("【Config】重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
 	log.Printf("【Config】内存清理时间间隔【%d】秒\n", c.MemoryCleanupInterval)
 	log.Printf("【Config】维护警告消息【%s】\n", c.MaintenanceWarningMessage)
@@ -50,7 +48,6 @@ var defaultConfig = &Config{
 	ProcessName:               processName,
 	CheckInterval:             5,
 	RCONPort:                  "25575",
-	MemoryCheckInterval:       70,
 	MemoryUsageThreshold:      80,
 	MemoryCleanupInterval:     3600,
 	MaintenanceWarningMessage: "Memory_Not_Enough_The_Server_Will_Reboot",
@@ -135,9 +132,6 @@ func fix(config *Config) {
 	}
 	if config.RCONPort == "" {
 		config.RCONPort = defaultConfig.RCONPort
-	}
-	if config.MemoryCheckInterval < 0 {
-		config.MemoryCheckInterval = defaultConfig.MemoryCheckInterval
 	}
 	if config.MemoryUsageThreshold <= 0 {
 		config.MemoryUsageThreshold = defaultConfig.MemoryUsageThreshold

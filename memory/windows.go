@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"github.com/Verthandii/palworld-go/config"
@@ -19,30 +20,29 @@ import (
 //go:embed RAMMap64.exe
 var rammapFS embed.FS
 
-type cleaner struct {
-	c          *config.Config
-	rammapFile string
-}
+var rammapFile string
 
-func NewCleaner(c *config.Config) Cleaner {
+func NewCleaner(c *config.Config, ch chan<- time.Duration) Cleaner {
 	cleaner := &cleaner{
-		c: c,
+		c:  c,
+		ch: ch,
 	}
 
-	if c.MemoryCheckInterval > 0 {
-		rammapFile, err := extractRAMMap()
+	var err error
+	if c.MemoryCleanupInterval > 0 {
+		rammapFile, err = extractRAMMap()
 		if err != nil {
-			log.Fatalf("无法提取RAMMap可执行文件: %v", err)
+			log.Printf("【Memory】无法提取 RAMMap 可执行文件【%v】\n", err)
+			os.Exit(1)
 		}
-		cleaner.rammapFile = rammapFile
 	}
 
 	return cleaner
 }
 
 func (cleaner *cleaner) Stop() {
-	if cleaner.c.MemoryCheckInterval > 0 {
-		_ = os.Remove(cleaner.rammapFile)
+	if cleaner.c.MemoryCleanupInterval > 0 {
+		_ = os.Remove(rammapFile)
 	}
 }
 
@@ -57,19 +57,20 @@ func (cleaner *cleaner) rebootClean() {
 		log.Printf("【Memory】内存占用超过【%v】, 重新启动游戏服务器\n", threshold)
 		c, err := rcon.New(cleaner.c)
 		if err != nil {
-			log.Printf("【Memory】RCON 客户端启动失败 【%v】\n", err)
+			log.Printf("【Memory】RCON 客户端启动失败【%v】\n", err)
 			return
 		}
 		c.HandleMemoryUsage(threshold)
-		defer c.Close()
+		c.Close()
+		cleaner.ch <- 70 * time.Second
 	}
 }
 
 // clean 使用 RAMMap 清理无用内存
 func (cleaner *cleaner) clean() {
-	_, _ = cleaner.getMemoryInfo()
-	log.Printf("【Memory】正在清理内存....\n")
-	cmd := exec.Command(cleaner.rammapFile, "-Ew")
+	_, free := cleaner.getMemoryInfo()
+	log.Printf("【Memory】空闲内存【%d】MB, 正在清理内存....\n", free)
+	cmd := exec.Command(rammapFile, "-Ew")
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("【Memory】运行 RAMMap 时发生错误 【%v】\n", err)
@@ -77,10 +78,12 @@ func (cleaner *cleaner) clean() {
 			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 		}
 	}
-	log.Printf("【Memory】清理内存成功\n")
-	_, _ = cleaner.getMemoryInfo()
+	_, free = cleaner.getMemoryInfo()
+	log.Printf("【Memory】清理内存成功, 空闲内存【%d】MB\n", free)
 }
 
 func (cleaner *cleaner) getMemoryInfo() (total, free uint64) {
@@ -108,8 +111,6 @@ func (cleaner *cleaner) getMemoryInfo() (total, free uint64) {
 
 	total = memStatus.ullTotalPhys / 1024 / 1024 // MB
 	free = memStatus.ullAvailPhys / 1024 / 1024  // MB
-
-	log.Printf("【Memory】空闲内存【%d MB】\n", free)
 
 	return
 }

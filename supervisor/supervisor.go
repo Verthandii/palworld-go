@@ -16,11 +16,13 @@ type Supervisor interface {
 
 type supervisor struct {
 	config *config.Config
+	ch     <-chan time.Duration
 }
 
-func New(cfg *config.Config) (Supervisor, error) {
+func New(cfg *config.Config, ch <-chan time.Duration) (Supervisor, error) {
 	return &supervisor{
 		config: cfg,
+		ch:     ch,
 	}, nil
 }
 
@@ -41,6 +43,9 @@ func (s *supervisor) Start(ctx context.Context) {
 		case <-ticker.C:
 			s.restart()
 			ticker.Reset(checkDuration)
+		case duration := <-s.ch:
+			ticker.Reset(duration)
+			log.Printf("【Supervisor】服务器即将重启, 重新设置轮询周期, 避免长时间等待服务器重启\n")
 		}
 	}
 }

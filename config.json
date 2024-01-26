@@ -5,7 +5,6 @@
     "processName": "PalServer.exe",
     "checkInterval": 5,
     "rconPort": "25575",
-    "memoryCheckInterval": 60,
     "memoryUsageThreshold": 50,
     "memoryCleanupInterval": 3600,
     "maintenanceWarningMessage": "Memory_Not_Enough_The_Server_Will_Reboot",

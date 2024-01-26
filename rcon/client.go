@@ -55,7 +55,7 @@ func (c *Client) Close() {
 
 // HandleMemoryUsage 发广播 重启维护
 func (c *Client) HandleMemoryUsage(threshold float64) {
-	c.Broadcast(fmt.Sprintf("broadcast Memory_Is_Above_%v%%", threshold))
+	c.Broadcast(fmt.Sprintf("Memory_Is_Above_%v%%", threshold))
 	c.Broadcast(c.c.MaintenanceWarningMessage)
 	c.Save()
 	c.Shutdown("60", "Reboot_In_60_Seconds")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Verthandii/palworld-go/config"
 	"github.com/Verthandii/palworld-go/memory"
@@ -16,16 +17,17 @@ func main() {
 	var (
 		ctx = context.Background()
 		cfg = config.Init()
+		ch  = make(chan time.Duration) // 用于通知 Supervisor 过多少秒后再次检查进程是否存活
 	)
 
 	cfg.PrintLog()
-	spvr, err := supervisor.New(cfg)
+	spvr, err := supervisor.New(cfg, ch)
 	if err != nil {
 		panic(err)
 	}
 	go spvr.Start(ctx)
 
-	cleaner := memory.NewCleaner(cfg)
+	cleaner := memory.NewCleaner(cfg, ch)
 	go cleaner.Schedule(ctx)
 	defer cleaner.Stop()
 

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Verthandii/palworld-go/config"
 	"github.com/Verthandii/palworld-go/rcon"
@@ -16,9 +17,10 @@ type cleaner struct {
 	c *config.Config
 }
 
-func NewCleaner(c *config.Config) Cleaner {
+func NewCleaner(c *config.Config, ch chan<- struct{}) Cleaner {
 	return &cleaner{
-		c: c,
+		c:  c,
+		ch: ch,
 	}
 }
 
@@ -44,14 +46,15 @@ func (cleaner *cleaner) rebootClean() {
 	}
 
 	if memoryUsage > threshold {
-		log.Printf("【Memory】内存占用超过 %v, 开始清理内存...\n", threshold)
+		log.Printf("【Memory】内存占用超过【%v】, 重新启动游戏服务器\n", threshold)
 		c, err := rcon.New(cfg)
 		if err != nil {
-			log.Printf("【Memory】rcon 客户端启动失败 【%v】\n", err)
+			log.Printf("【Memory】RCON 客户端启动失败【%v】\n", err)
 			return
 		}
 		c.HandleMemoryUsage(threshold)
-		defer c.Close()
+		c.Close()
+		cleaner.ch <- 70 * time.Second
 	}
 }
 
