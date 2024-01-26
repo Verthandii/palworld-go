@@ -1,5 +1,5 @@
 {
-    "gamePath": "E:\\Program Files (x86)\\Steam\\steamapps\\common\\PalServer",
+    "gamePath": "D:\\Program Files (x86)\\Steam\\steamapps\\common\\PalServer",
     "address": "127.0.0.1:25575",
     "adminPassword": "default_password",
     "processName": "PalServer.exe",

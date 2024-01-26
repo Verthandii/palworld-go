@@ -1,13 +1,17 @@
 package config
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
+
+	"gopkg.in/ini.v1"
 )
 
 type Config struct {
@@ -129,18 +133,11 @@ func fix(config *Config) {
 		config.MaintenanceWarningMessage = "服务器即将进行维护,你的存档已保存,请放心,请坐稳扶好,1分钟后重新登录。"
 	}
 
-	// 修改游戏配置 ini
-	copyGameConfig(config)
-	gameConfigData, err := os.ReadFile(path.Join(config.GamePath, gameConfigFile))
-	if err != nil {
-		log.Printf("加载游戏配置文件失败【%v】", err)
-		os.Exit(1)
-	}
-	gameConfigDataStr := string(gameConfigData)
-	gameConfigDataStr = strings.ReplaceAll(gameConfigDataStr, "RCONEnabled=False", "RCONEnabled=True")
-	gameConfigDataStr = strings.ReplaceAll(gameConfigDataStr, `AdminPassword=""`, fmt.Sprintf(`AdminPassword="%s"`, config.AdminPassword))
-
-	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), []byte(gameConfigDataStr), 0666)
+	copyGameConfig(config, false)
+	configMap := parseGameConfig(config)
+	configMap["RCONEnabled"] = "True"
+	configMap["AdminPassword"] = config.AdminPassword
+	err = os.WriteFile(path.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
 	if err != nil {
 		log.Printf("更新游戏配置文件失败【%v】", err)
 		os.Exit(1)
@@ -148,7 +145,7 @@ func fix(config *Config) {
 }
 
 // copyGameConfig 如果没有游戏配置文件，则将默认的配置文件复制过去
-func copyGameConfig(c *Config) {
+func copyGameConfig(c *Config, force bool) {
 	filePath := path.Join(c.GamePath, gameConfigFile)
 	dir, _ := path.Split(filePath)
 
@@ -169,19 +166,67 @@ func copyGameConfig(c *Config) {
 
 	// 目录存在 或者 被新建出来了
 	stat, err = os.Stat(filePath)
-	if err == nil {
+	if err == nil && !force {
 		// 存在游戏配置，不用 copy
 		return
 	}
 
-	defaultSetting, err := os.ReadFile(c.GamePath + "DefaultPalWorldSettings.ini")
+	defaultSetting, err := os.ReadFile(path.Join(c.GamePath, "DefaultPalWorldSettings.ini"))
 	if err != nil {
 		log.Printf("读取游戏默认配置失败【%v】", err)
 		os.Exit(1)
 	}
 
 	if err = os.WriteFile(filePath, defaultSetting, 0666); err != nil {
-		log.Printf("新建游戏配置失败【%v】", err)
+		log.Printf("生成游戏配置文件失败【%v】", err)
 		os.Exit(1)
 	}
+
+	log.Printf("生成游戏配置文件成功\n")
+}
+
+func parseGameConfig(c *Config) map[string]string {
+	f, err := ini.Load(path.Join(c.GamePath, gameConfigFile))
+	if err != nil {
+		log.Printf("加载游戏配置文件失败【%v】", err)
+		os.Exit(1)
+	}
+	kvs := f.Section("/Script/Pal.PalGameWorldSettings").Key("OptionSettings").Strings(",")
+	if len(kvs) < 2 {
+		log.Printf("游戏配置文件损坏, 重新生成")
+		copyGameConfig(c, true)
+		return parseGameConfig(c)
+	}
+
+	res := make(map[string]string)
+	for _, kv := range kvs {
+		pair := strings.SplitN(kv, "=", 2)
+		if len(pair) != 2 {
+			log.Printf("游戏配置文件损坏, 重新生成")
+			copyGameConfig(c, true)
+			return parseGameConfig(c)
+		}
+		k := pair[0]
+		v := pair[1]
+		if k[0] == '(' {
+			k = k[1:]
+		}
+		if v[len(v)-1] == ')' {
+			v = v[:len(v)-1]
+		}
+		res[k] = v
+	}
+	return res
+}
+
+func marshalGameConfig(configMap map[string]string) []byte {
+	arr := make([]string, 0)
+	for k, v := range configMap {
+		arr = append(arr, fmt.Sprintf("%s=%s", k, v))
+	}
+	sort.Strings(arr)
+	buf := bytes.NewBufferString("[/Script/Pal.PalGameWorldSettings]\nOptionSettings=(")
+	buf.WriteString(strings.Join(arr, ","))
+	buf.WriteString(")")
+	return buf.Bytes()
 }
