@@ -3,7 +3,12 @@
 package memory
 
 import (
+	"bufio"
+	"embed"
+	"fmt"
+	"io/fs"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -70,12 +75,16 @@ func (cleaner *cleaner) rebootClean() {
 	}
 }
 
-// clean 暂无清理内存的方法
 func (cleaner *cleaner) clean() {
-	_, free := cleaner.getMemoryInfo()
+	free, err := cleaner.getMemoryInfo()
+	if err != nil {
+		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		return
+	}
+
 	log.Printf("【Memory】空闲内存【%d】MB, 正在清理内存....\n", free)
 	cmd := exec.Command("sh", cleanMemoryFile)
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		log.Printf("【Memory】运行 clean_memory.sh 时发生错误 【%v】\n", err)
 		if strings.Contains(err.Error(), "The requested operation requires elevation") {
@@ -86,8 +95,44 @@ func (cleaner *cleaner) clean() {
 			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 		}
 	}
-	_, free = cleaner.getMemoryInfo()
+	free, err = cleaner.getMemoryInfo()
+	if err != nil {
+		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		return
+	}
 	log.Printf("【Memory】清理内存成功, 空闲内存【%d】MB\n", free)
+}
+
+func (cleaner *cleaner) getMemoryInfo() (uint64, error) {
+	file, err := os.Open("/proc/meminfo")
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Fields(line)
+		if len(parts) < 2 {
+			continue
+		}
+
+		switch parts[0] {
+		case "MemAvailable:":
+			availableKB, err := strconv.ParseUint(parts[1], 10, 64)
+			if err != nil {
+				return 0, err
+			}
+			return availableKB / 1024, nil // KB -> MB
+		}
+	}
+
+	if err = scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	return 0, fmt.Errorf("available memory info not found")
 }
 
 func extractCleanMemoryShell() (string, error) {

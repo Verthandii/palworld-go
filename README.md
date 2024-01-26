@@ -16,15 +16,23 @@
 
 ![游戏内效果图](/pic/palworld_reboot.png)
 
-### 自动清理无用内存（仅支持 windows）
+### 自动清理无用内存
 
-通过调用微软的 [RAMMap](https://learn.microsoft.com/en-us/sysinternals/downloads/rammap) 释放无用内存，完美解决《幻兽帕鲁》服务器的内存泄漏问题。
+在 Windows，Linux 皆可定时清理无用内存，完美解决《幻兽帕鲁》服务器的内存泄漏问题。
+
+**清理内存时需要使用 fork/exec, 此操作需要您使用管理员权限打开终端**
+
+#### Windows
+
+通过调用微软的 [RAMMap](https://learn.microsoft.com/en-us/sysinternals/downloads/rammap) 释放无用内存。
+
+#### Linux
+
+通过 Linux 原生命令释放不再需要的缓存和清空交换空间，以回收内存资源。
 
 ### 自动备份
 
-每经过配置好的时间间隔，对服务器所有数据进行备份，避免因为死档而导致游戏提前完结撒花
-
-> 使用 RAMMap 时需要使用 fork/exec, 此操作需要您使用管理员权限打开终端
+每经过配置好的时间间隔，对服务器所有数据进行备份，避免因为死档而导致游戏提前完结撒花。
 
 ## 使用方法
 
