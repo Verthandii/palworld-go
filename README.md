@@ -20,8 +20,6 @@
 
 在 Windows，Linux 皆可定时清理无用内存，完美解决《幻兽帕鲁》服务器的内存泄漏问题。
 
-**清理内存时需要使用 fork/exec, 此操作需要您使用管理员权限打开终端**
-
 ![运行效果图3](/pic/palworld_go_3.png)
 
 #### Windows
@@ -44,11 +42,15 @@
 
 ### Windows Steam 客户端
 
+**程序中需要使用 fork/exec 命令, 这需要您使用管理员权限运行本程序**
+
 1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示 ![打开目录](/pic/windows_steam_start.png)
 2. 将目录粘贴到 `config.json` 的 `gamePath` 中 ![打开目录](/pic/dir.png)
 3. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/releases)好的可执行文件
 
 ### Windows SteamCMD
+
+**程序中需要使用 fork/exec 命令, 这需要您使用管理员权限运行本程序**
 
 1. 将服务器目录粘贴到 `config.json` 的 `gamePath` 中
 2. 以**管理员权限**打开终端，运行[下载](https://github.com/Verthandii/palworld-go/releases)好的可执行文件
