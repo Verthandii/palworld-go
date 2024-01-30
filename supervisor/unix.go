@@ -24,6 +24,3 @@ func (s *supervisor) isAlive() bool {
 	output := strings.TrimSpace(string(out))
 	return output != ""
 }
-
-func (s *supervisor) Close() {
-}

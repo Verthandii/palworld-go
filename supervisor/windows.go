@@ -17,7 +17,3 @@ func (s *supervisor) isAlive() bool {
 	}
 	return strings.Contains(string(out), s.config.ProcessName)
 }
-
-func (s *supervisor) Close() {
-
-}

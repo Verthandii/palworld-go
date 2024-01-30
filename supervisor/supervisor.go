@@ -12,7 +12,6 @@ import (
 
 type Supervisor interface {
 	Start(ctx context.Context)
-	Close()
 }
 
 type supervisor struct {
@@ -68,6 +67,8 @@ func (s *supervisor) restart() {
 	} else {
 		log.Printf("【Supervisor】服务器启动成功\n")
 	}
+
+	go func() { _ = cmd.Wait() }()
 }
 
 func (s *supervisor) usePerfThreads() []string {

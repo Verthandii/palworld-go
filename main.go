@@ -28,7 +28,6 @@ func main() {
 		panic(err)
 	}
 	go spvr.Start(ctx)
-	defer spvr.Close()
 
 	cleaner := memory.NewCleaner(cfg, ch)
 	go cleaner.Schedule(ctx)

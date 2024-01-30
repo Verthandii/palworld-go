@@ -40,7 +40,7 @@
 
 ## 使用方法
 
-前提条件: 按[官方文档](https://tech.palworldgame.com/dedicated-server-guide)安装好所需文件。
+**前提条件: 按[官方文档](https://tech.palworldgame.com/dedicated-server-guide)安装好所需文件**
 
 ### Windows Steam 客户端
 
