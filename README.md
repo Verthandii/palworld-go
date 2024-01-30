@@ -56,8 +56,8 @@
 ### Linux SteamCMD
 
 ```shell
-wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/download/v0.0.1/palworld-go-linux-amd64
-wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/download/v0.0.1/config.json
+wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/latest/download/palworld-go-linux-amd64
+wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/latest/download/config.json
 vim ./config.json
 chmod u+x palworld-go-linux-amd64 
 ./palworld-go-linux-amd64
