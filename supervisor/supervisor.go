@@ -12,6 +12,7 @@ import (
 
 type Supervisor interface {
 	Start(ctx context.Context)
+	Close()
 }
 
 type supervisor struct {

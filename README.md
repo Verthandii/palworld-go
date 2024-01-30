@@ -40,6 +40,8 @@
 
 ## 使用方法
 
+前提条件: 按[官方文档](https://tech.palworldgame.com/dedicated-server-guide)安装好所需文件。
+
 ### Windows Steam 客户端
 
 1. 搜索 `pal`, 右键 `Palworld Dedicated Server` 如图所示 ![打开目录](/pic/windows_steam_start.png)
@@ -53,23 +55,29 @@
 
 ### Linux SteamCMD
 
-TODO
+```shell
+wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/download/v0.0.1/palworld-go-linux-amd64
+wget https://mirror.ghproxy.com/https://github.com/Verthandii/palworld-go/releases/download/v0.0.1/config.json
+vim ./config.json
+chmod u+x palworld-go-linux-amd64 
+./palworld-go-linux-amd64
+```
 
 ## 配置文件描述
 
-| 配置项                       | 推荐值                                                       | 备注                            |
-|---------------------------|-----------------------------------------------------------|-------------------------------|
-| gamePath                  | "D:\Program Files (x86)\Steam\steamapps\common\PalServer" | 游戏可执行文件路径 PalServer.exe 所处的位置 |
-| address                   | "127.0.0.1:25575"                                         | 服务器地址 + RCON 端口               |
-| adminPassword             | "WqB6oY7IzMffxF17Q8La"                                    | RCON 管理员密码                    |
-| processName               | "PalServer.exe"                                           | 进程名称 PalServer.exe            |
-| processCheckInterval      | 5                                                         | 进程存活检查间隔（秒）                   |
-| memoryUsageThreshold      | 75                                                        | 重启阈值（百分比）                     |
-| memoryCleanupInterval     | 600                                                       | 内存清理间隔（秒）0 表示不清理内存            |
-| backupPath                | "D:\Program Files (x86)\backup\PalServer"                 | 备份路径                          |
-| backupInterval            | 1800                                                      | 备份间隔（秒） 0 表示不备份               |
-| maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | 维护警告消息（不支持中文且不支持空格）           |
-| usePerfThreads            | true                                                      | 多线程优化                         |
+| 配置项                       | Windows 推荐值                                               | Linux 推荐值                                      | 备注                            |
+|---------------------------|-----------------------------------------------------------|------------------------------------------------|-------------------------------|
+| gamePath                  | "D:\Program Files (x86)\Steam\steamapps\common\PalServer" | "/home/steam/Steam/steamapps/common/PalServer" | 游戏可执行文件路径 PalServer.exe 所处的位置 |
+| address                   | "127.0.0.1:25575"                                         | "127.0.0.1:25575"                              | 服务器地址 + RCON 端口               |
+| adminPassword             | "WqB6oY7IzMffxF17Q8La"                                    | "WqB6oY7IzMffxF17Q8La"                         | RCON 管理员密码                    |
+| processName               | "PalServer.exe"                                           | "PalServer.sh"                                 | 进程名称                          |
+| processCheckInterval      | 5                                                         | 5                                              | 进程存活检查间隔（秒）                   |
+| memoryUsageThreshold      | 75                                                        | 75                                             | 重启阈值（百分比）                     |
+| memoryCleanupInterval     | 600                                                       | 600                                            | 内存清理间隔（秒）0 表示不清理内存            |
+| backupPath                | "D:\Program Files (x86)\backup\PalServer"                 | "/home/steam/backup"                           | 备份路径                          |
+| backupInterval            | 1800                                                      | 1800                                           | 备份间隔（秒） 0 表示不备份               |
+| maintenanceWarningMessage | Memory_Not_Enough_The_Server_Will_Reboot                  | Memory_Not_Enough_The_Server_Will_Reboot       | 维护警告消息（不支持中文且不支持空格）           |
+| usePerfThreads            | true                                                      | true                                           | 多线程优化                         |
 
 ## 计划
 
