@@ -11,8 +11,7 @@ type Logger struct {
 }
 
 func NewLogger(prefix string) *Logger {
-	logger := log.New(os.Stdout, "", log.LstdFlags)
-	logger.SetPrefix(fmt.Sprintf("【%s】", prefix))
+	logger := log.New(os.Stdout, fmt.Sprintf("【%s】", prefix), log.LstdFlags)
 	return &Logger{
 		logger: logger,
 	}
