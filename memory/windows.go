@@ -32,7 +32,7 @@ func NewCleaner(c *config.Config, ch chan<- time.Duration) Cleaner {
 	if c.MemoryCleanupInterval > 0 {
 		rammapFile, err = extractRAMMap()
 		if err != nil {
-			log.Printf("【Memory】无法提取 RAMMap 可执行文件【%v】\n", err)
+			log.Printf("无法提取 RAMMap 可执行文件【%v】\n", err)
 			os.Exit(1)
 		}
 	}
@@ -54,10 +54,10 @@ func (cleaner *cleaner) rebootClean() {
 	threshold := cleaner.c.MemoryUsageThreshold
 
 	if memoryUsage > threshold {
-		log.Printf("【Memory】内存占用超过【%v】%%, 重新启动游戏服务器\n", threshold)
+		log.Printf("内存占用超过【%v】%%, 重新启动游戏服务器\n", threshold)
 		c, err := rcon.New(cleaner.c)
 		if err != nil {
-			log.Printf("【Memory】RCON 客户端启动失败【%v】\n", err)
+			log.Printf("RCON 客户端启动失败【%v】\n", err)
 			return
 		}
 		c.HandleMemoryUsage(threshold)
@@ -69,21 +69,21 @@ func (cleaner *cleaner) rebootClean() {
 // clean 使用 RAMMap 清理无用内存
 func (cleaner *cleaner) clean() {
 	_, free := cleaner.getMemoryInfo()
-	log.Printf("【Memory】空闲内存【%d】MB, 正在清理内存....\n", free)
+	log.Printf("空闲内存【%d】MB, 正在清理内存....\n", free)
 	cmd := exec.Command(rammapFile, "-Ew")
 	err := cmd.Run()
 	if err != nil {
-		log.Printf("【Memory】运行 RAMMap 时发生错误 【%v】\n", err)
+		log.Printf("运行 RAMMap 时发生错误 【%v】\n", err)
 		if strings.Contains(err.Error(), "The requested operation requires elevation") {
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 		}
 	}
 	_, free = cleaner.getMemoryInfo()
-	log.Printf("【Memory】清理内存成功, 空闲内存【%d】MB\n", free)
+	log.Printf("清理内存成功, 空闲内存【%d】MB\n", free)
 }
 
 func (cleaner *cleaner) getMemoryInfo() (total, free uint64) {
@@ -105,7 +105,7 @@ func (cleaner *cleaner) getMemoryInfo() (total, free uint64) {
 	globalMemoryStatusEx := kernel32.NewProc("GlobalMemoryStatusEx")
 	ret, _, err := globalMemoryStatusEx.Call(uintptr(unsafe.Pointer(&memStatus)))
 	if ret == 0 {
-		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		log.Printf("获取内存信息失败【%v】\n", err)
 		return
 	}
 

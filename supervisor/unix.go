@@ -3,7 +3,6 @@
 package supervisor
 
 import (
-	"log"
 	"os/exec"
 	"strings"
 )
@@ -16,7 +15,7 @@ func (s *supervisor) isAlive() bool {
 			return false
 		}
 
-		log.Printf("【Supervisor】健康检查失败【%v】\n", err)
+		log.Printf("健康检查失败【%v】\n", err)
 		return false
 	}
 

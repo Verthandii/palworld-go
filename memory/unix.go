@@ -7,7 +7,6 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -33,7 +32,7 @@ func NewCleaner(c *config.Config, ch chan<- time.Duration) Cleaner {
 	if c.MemoryCleanupInterval > 0 {
 		cleanMemoryFile, err = extractCleanMemoryShell()
 		if err != nil {
-			log.Printf("【Memory】无法提取 clean_memory.sh【%v】\n", err)
+			log.Printf("无法提取 clean_memory.sh【%v】\n", err)
 			os.Exit(1)
 		}
 	}
@@ -52,21 +51,21 @@ func (cleaner *cleaner) rebootClean() {
 
 	output, err := exec.Command("sh", "-c", "free | grep Mem | awk '{print $3/$2 * 100.0}'").Output()
 	if err != nil {
-		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		log.Printf("获取内存信息失败【%v】\n", err)
 		return
 	}
 
 	memoryUsage, err := strconv.ParseFloat(strings.TrimSpace(string(output)), 64)
 	if err != nil {
-		log.Printf("【Memory】解析内存信息失败【%v】\n", err)
+		log.Printf("解析内存信息失败【%v】\n", err)
 		return
 	}
 
 	if memoryUsage > threshold {
-		log.Printf("【Memory】内存占用超过【%v】%%, 重新启动游戏服务器\n", threshold)
+		log.Printf("内存占用超过【%v】%%, 重新启动游戏服务器\n", threshold)
 		c, err := rcon.New(cfg)
 		if err != nil {
-			log.Printf("【Memory】RCON 客户端启动失败【%v】\n", err)
+			log.Printf("RCON 客户端启动失败【%v】\n", err)
 			return
 		}
 		c.HandleMemoryUsage(threshold)
@@ -78,29 +77,29 @@ func (cleaner *cleaner) rebootClean() {
 func (cleaner *cleaner) clean() {
 	free, err := cleaner.getMemoryInfo()
 	if err != nil {
-		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		log.Printf("获取内存信息失败【%v】\n", err)
 		return
 	}
 
-	log.Printf("【Memory】空闲内存【%d】MB, 正在清理内存....\n", free)
+	log.Printf("空闲内存【%d】MB, 正在清理内存....\n", free)
 	cmd := exec.Command("sh", cleanMemoryFile)
 	err = cmd.Run()
 	if err != nil {
-		log.Printf("【Memory】运行 clean_memory.sh 时发生错误 【%v】\n", err)
+		log.Printf("运行 clean_memory.sh 时发生错误 【%v】\n", err)
 		if strings.Contains(err.Error(), "The requested operation requires elevation") {
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
-			log.Printf("【Memory】~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
+			log.Printf("~~~~~~~请以【管理员权限】打开终端~~~~~~~\n")
 		}
 	}
 	free, err = cleaner.getMemoryInfo()
 	if err != nil {
-		log.Printf("【Memory】获取内存信息失败【%v】\n", err)
+		log.Printf("获取内存信息失败【%v】\n", err)
 		return
 	}
-	log.Printf("【Memory】清理内存成功, 空闲内存【%d】MB\n", free)
+	log.Printf("清理内存成功, 空闲内存【%d】MB\n", free)
 }
 
 func (cleaner *cleaner) getMemoryInfo() (uint64, error) {
