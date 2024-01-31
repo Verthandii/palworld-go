@@ -3,13 +3,15 @@ package backup
 import (
 	"context"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/Verthandii/palworld-go/config"
+	"github.com/Verthandii/palworld-go/logger"
 )
+
+var log = logger.NewLogger("Backup")
 
 type Backup struct {
 	c *config.Config
@@ -26,7 +28,7 @@ func (b *Backup) Schedule(ctx context.Context) {
 		return
 	}
 
-	log.Printf("【Backup】启动成功，定时备份服务器数据\n")
+	log.Printf("启动成功，定时备份服务器数据\n")
 
 	duration := time.Duration(b.c.BackupInterval) * time.Second
 	ticker := time.NewTicker(duration)
@@ -47,7 +49,7 @@ func (b *Backup) backup() {
 
 	backupDir := filepath.Join(b.c.BackupPath, currentDate)
 	if err := os.MkdirAll(backupDir, 0777); err != nil {
-		log.Printf("【Backup】备份文件夹创建失败【%v】\n", err)
+		log.Printf("备份文件夹创建失败【%v】\n", err)
 		return
 	}
 
@@ -55,9 +57,9 @@ func (b *Backup) backup() {
 	dst := filepath.Join(backupDir, "Pal", "Saved")
 
 	if err := copyDir(src, dst); err != nil {
-		log.Printf("【Backup】备份失败【%v】\n", err)
+		log.Printf("备份失败【%v】\n", err)
 	} else {
-		log.Printf("【Backup】成功备份至【%s】\n", backupDir)
+		log.Printf("成功备份至【%s】\n", backupDir)
 	}
 }
 
