@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
+	"github.com/Verthandii/palworld-go/logger"
 	"gopkg.in/ini.v1"
 )
+
+var log = logger.NewLogger("Config")
 
 type Config struct {
 	GamePath                  string  `json:"gamePath"`                  // 游戏可执行文件路径 PalServer.exe 所处的位置
@@ -29,17 +31,17 @@ type Config struct {
 }
 
 func (c *Config) PrintLog() {
-	log.Printf("【Config】游戏服务器目录【%s】\n", c.GamePath)
-	log.Printf("【Config】服务器地址 + RCON 端口【%s】\n", c.Address)
-	log.Printf("【Config】RCON 管理员密码【%s】\n", c.AdminPassword)
-	log.Printf("【Config】进程名称【%s】\n", c.ProcessName)
-	log.Printf("【Config】进程存活检查间隔【%d】秒\n", c.ProcessCheckInterval)
-	log.Printf("【Config】重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
-	log.Printf("【Config】内存清理间隔【%d】秒\n", c.MemoryCleanupInterval)
-	log.Printf("【Config】备份路径【%s】\n", c.BackupPath)
-	log.Printf("【Config】备份间隔【%d】秒\n", c.BackupInterval)
-	log.Printf("【Config】维护警告消息【%s】\n", c.MaintenanceWarningMessage)
-	log.Printf("【Config】多线程优化【%v】\n", c.UsePerfThreads)
+	log.Printf("游戏服务器目录【%s】\n", c.GamePath)
+	log.Printf("服务器地址 + RCON 端口【%s】\n", c.Address)
+	log.Printf("RCON 管理员密码【%s】\n", c.AdminPassword)
+	log.Printf("进程名称【%s】\n", c.ProcessName)
+	log.Printf("进程存活检查间隔【%d】秒\n", c.ProcessCheckInterval)
+	log.Printf("重启阈值【%.2f】%%\n", c.MemoryUsageThreshold)
+	log.Printf("内存清理间隔【%d】秒\n", c.MemoryCleanupInterval)
+	log.Printf("备份路径【%s】\n", c.BackupPath)
+	log.Printf("备份间隔【%d】秒\n", c.BackupInterval)
+	log.Printf("维护警告消息【%s】\n", c.MaintenanceWarningMessage)
+	log.Printf("多线程优化【%v】\n", c.UsePerfThreads)
 }
 
 // 默认配置
@@ -66,7 +68,7 @@ const (
 func Init() *Config {
 	data, err := os.ReadFile(configFile)
 	if err != nil {
-		log.Printf("【Config】无法读取配置文件, 正在创建默认配置...\n")
+		log.Printf("无法读取配置文件, 正在创建默认配置...\n")
 		createDefaultConfig()
 		return defaultConfig
 	}
@@ -74,12 +76,12 @@ func Init() *Config {
 	var config *Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
-		log.Printf("【Config】配置解析失败, 正在使用默认配置...\n")
+		log.Printf("配置解析失败, 正在使用默认配置...\n")
 		return defaultConfig
 	}
 
 	fix(config)
-	log.Printf("【Config】配置文件已生效\n")
+	log.Printf("配置文件已生效\n")
 
 	return config
 }
@@ -87,23 +89,23 @@ func Init() *Config {
 func createDefaultConfig() {
 	data, err := json.MarshalIndent(defaultConfig, "", "    ")
 	if err != nil {
-		log.Printf("【Config】无法创建默认配置文件【%v】\n", err)
+		log.Printf("无法创建默认配置文件【%v】\n", err)
 		os.Exit(1)
 	}
 
 	err = os.WriteFile(configFile, data, 0666)
 	if err != nil {
-		log.Printf("【Config】无法写入默认配置文件【%v】\n", err)
+		log.Printf("无法写入默认配置文件【%v】\n", err)
 		os.Exit(1)
 	}
 
-	log.Printf("【Config】默认配置文件创建成功\n")
+	log.Printf("默认配置文件创建成功\n")
 }
 
 func fix(config *Config) {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		log.Printf("【Config】工作目录获取失败【%v】\n", err)
+		log.Printf("工作目录获取失败【%v】\n", err)
 		os.Exit(1)
 	}
 
@@ -114,7 +116,7 @@ func fix(config *Config) {
 	gamePath = filepath.Join(gamePath, config.ProcessName)
 
 	if _, err = os.Stat(gamePath); os.IsNotExist(err) {
-		log.Printf("【Config】当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
+		log.Printf("当前目录未找到 %s 文件, 请将程序放置在 %s 同目录下\n", config.ProcessName, config.ProcessName)
 		os.Exit(1)
 	}
 
@@ -125,7 +127,7 @@ func fix(config *Config) {
 		config.Address = defaultConfig.Address
 	}
 	if config.AdminPassword == "" {
-		log.Printf("【Config】配置文件错误: RCON 密码未填写\n")
+		log.Printf("配置文件错误: RCON 密码未填写\n")
 		os.Exit(1)
 	}
 	if config.ProcessName == "" {
@@ -152,7 +154,7 @@ func fix(config *Config) {
 
 	_, rconPort, err := net.SplitHostPort(config.Address)
 	if err != nil {
-		log.Printf("【Config】配置文件错误: address 填写错误\n")
+		log.Printf("配置文件错误: address 填写错误\n")
 		os.Exit(1)
 	}
 
@@ -163,7 +165,7 @@ func fix(config *Config) {
 	configMap["AdminPassword"] = fmt.Sprintf(`"%s"`, config.AdminPassword)
 	err = os.WriteFile(filepath.Join(config.GamePath, gameConfigFile), marshalGameConfig(configMap), 0666)
 	if err != nil {
-		log.Printf("【Config】更新游戏配置文件失败【%v】\n", err)
+		log.Printf("更新游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 }
@@ -176,14 +178,14 @@ func copyGameConfig(c *Config, force bool) {
 	stat, err := os.Stat(dir)
 	if err == nil {
 		if !stat.IsDir() {
-			log.Printf("【Config】游戏目录损坏, 请重新下载游戏\n")
+			log.Printf("游戏目录损坏, 请重新下载游戏\n")
 			os.Exit(1)
 		}
 	}
 
 	if os.IsNotExist(err) {
 		if err = os.MkdirAll(dir, 0777); err != nil {
-			log.Printf("【Config】创建游戏目录失败【%v】\n", err)
+			log.Printf("创建游戏目录失败【%v】\n", err)
 			os.Exit(1)
 		}
 	}
@@ -197,27 +199,27 @@ func copyGameConfig(c *Config, force bool) {
 
 	defaultSetting, err := os.ReadFile(filepath.Join(c.GamePath, gameDefaultConfigFile))
 	if err != nil {
-		log.Printf("【Config】读取游戏默认配置失败【%v】\n", err)
+		log.Printf("读取游戏默认配置失败【%v】\n", err)
 		os.Exit(1)
 	}
 
 	if err = os.WriteFile(filePath, defaultSetting, 0666); err != nil {
-		log.Printf("【Config】生成游戏配置文件失败【%v】\n", err)
+		log.Printf("生成游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 
-	log.Printf("【Config】生成游戏配置文件成功\n")
+	log.Printf("生成游戏配置文件成功\n")
 }
 
 func parseGameConfig(c *Config) map[string]string {
 	f, err := ini.Load(filepath.Join(c.GamePath, gameConfigFile))
 	if err != nil {
-		log.Printf("【Config】加载游戏配置文件失败【%v】\n", err)
+		log.Printf("加载游戏配置文件失败【%v】\n", err)
 		os.Exit(1)
 	}
 	kvs := f.Section("/Script/Pal.PalGameWorldSettings").Key("OptionSettings").Strings(",")
 	if len(kvs) < 2 {
-		log.Printf("【Config】游戏配置文件损坏, 重新生成\n")
+		log.Printf("游戏配置文件损坏, 重新生成\n")
 		copyGameConfig(c, true)
 		return parseGameConfig(c)
 	}
@@ -226,7 +228,7 @@ func parseGameConfig(c *Config) map[string]string {
 	for _, kv := range kvs {
 		pair := strings.SplitN(kv, "=", 2)
 		if len(pair) != 2 {
-			log.Printf("【Config】游戏配置文件损坏, 重新生成\n")
+			log.Printf("游戏配置文件损坏, 重新生成\n")
 			copyGameConfig(c, true)
 			return parseGameConfig(c)
 		}

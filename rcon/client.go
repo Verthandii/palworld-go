@@ -2,13 +2,15 @@ package rcon
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/gorcon/rcon"
 
 	"github.com/Verthandii/palworld-go/config"
+	"github.com/Verthandii/palworld-go/logger"
 )
+
+var log = logger.NewLogger("RCON")
 
 // CmdName https://tech.palworldgame.com/server-commands
 type CmdName string
@@ -49,7 +51,7 @@ func New(c *config.Config) (*Client, error) {
 func (c *Client) Close() {
 	err := c.conn.Close()
 	if err != nil {
-		log.Printf("【RCON】关闭连接时发生错误: %v\n", err)
+		log.Printf("关闭连接时发生错误: %v\n", err)
 	}
 }
 
@@ -119,8 +121,8 @@ func (c *Client) exec(cmd CmdName, args ...string) {
 	}
 
 	if _, err := c.conn.Execute(cmdStr); err != nil {
-		log.Printf("【RCON】执行命令【%s】时发生错误【%v】\n", cmdStr, err)
+		log.Printf("执行命令【%s】时发生错误【%v】\n", cmdStr, err)
 	} else {
-		log.Printf("【RCON】执行命令【%s】\n", cmdStr)
+		log.Printf("执行命令【%s】\n", cmdStr)
 	}
 }
