@@ -49,7 +49,7 @@ func (cleaner *cleaner) rebootClean() {
 	cfg := cleaner.c
 	threshold := cfg.MemoryUsageThreshold
 
-	output, err := exec.Command("sh", "-c", "free | grep Mem | awk '{print $3/$2 * 100.0}'").Output()
+	output, err := exec.Command("sh", "-c", "free | sed -n '2p' | awk '{print $3/$2 * 100.0}'").Output()
 	if err != nil {
 		log.Printf("获取内存信息失败【%v】\n", err)
 		return
