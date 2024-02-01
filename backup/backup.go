@@ -45,10 +45,11 @@ func (b *Backup) Schedule(ctx context.Context) {
 }
 
 func (b *Backup) backup() {
-	currentDate := time.Now().Format("2006-01-02-15-04-05")
-
-	backupDir := filepath.Join(b.c.BackupPath, currentDate)
-	if err := os.MkdirAll(backupDir, 0777); err != nil {
+	nowAt := time.Now()
+	currentDate := nowAt.Format("2006-01-02")
+	currentTime := nowAt.Format("15-04-05")
+	backupDir := filepath.Join(b.c.BackupPath, currentDate, currentTime)
+	if err := makeDir(backupDir); err != nil {
 		log.Printf("备份文件夹创建失败【%v】\n", err)
 		return
 	}
@@ -61,6 +62,20 @@ func (b *Backup) backup() {
 	} else {
 		log.Printf("成功备份至【%s】\n", backupDir)
 	}
+}
+
+func makeDir(backupDir string) error {
+	_, err := os.Stat(backupDir)
+	if err == nil {
+		return nil
+	}
+	if !os.IsNotExist(err) {
+		return err
+	}
+	if err := os.MkdirAll(backupDir, 0777); err != nil {
+		return err
+	}
+	return nil
 }
 
 func copyDir(src string, dst string) error {
