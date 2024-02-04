@@ -4,7 +4,6 @@ package supervisor
 
 import (
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
 )

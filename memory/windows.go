@@ -5,7 +5,6 @@ package memory
 import (
 	"embed"
 	"io/fs"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
